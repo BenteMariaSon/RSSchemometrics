@@ -4,8 +4,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 from sklearn.base import BaseEstimator
-from RSSchemometrics.Plotting import rucolors
-from Plotting.ComponentPlots import *
+from .Plotting import rucolors
+from .Plotting.ComponentPlots import *
 
 def mean_centering(X):
     """
