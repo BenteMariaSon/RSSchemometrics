@@ -7,7 +7,7 @@ from scipy import stats
 from matplotlib.lines import Line2D
 import matplotlib.colors as mcolors
 # from Codebase import rucolors
-import Plotting.rucolors as rucolors
+import .Plotting.rucolors as rucolors
 
 #===================================================================================================================================================#
 
