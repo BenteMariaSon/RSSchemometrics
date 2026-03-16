@@ -1,8 +1,8 @@
 # Import relevant libraries
 import numpy as np
 import matplotlib.pyplot as plt
-from Plotting.ComponentPlots import *
-from Plotting.ValidationPlots import *
+from .Plotting.ComponentPlots import *
+from .Plotting.ValidationPlots import *
 from data_processing.PreProcessing import MeanCentering
 from sklearn.model_selection import KFold, cross_validate, cross_val_predict
 from sklearn.base import BaseEstimator
