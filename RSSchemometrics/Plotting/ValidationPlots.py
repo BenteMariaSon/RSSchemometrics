@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt 
 from sklearn.metrics import r2_score, root_mean_squared_error, confusion_matrix, ConfusionMatrixDisplay
 # from Codebase import rucolors
-import .Plotting.rucolors as rucolors
+from . import rucolors
 
 #===================================================================================================================================================#
 
