@@ -6,7 +6,7 @@ import matplotlib as mpl
 import seaborn as sns
 from scipy.stats import linregress
 # from Codebase import rucolors
-import Plotting.rucolors as rucolors
+import .Plotting.rucolors as rucolors
 
 #===================================================================================================================================================#
 
