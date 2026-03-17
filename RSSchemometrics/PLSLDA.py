@@ -68,13 +68,13 @@ class PLSLDA(BaseEstimator):
         """
         self.is_fitted_ = True
         X = np.asarray(X, copy=True)
-        y = np.asarray(y, copy=True)
+        y_original = np.asarray(y, copy=True)
 
         n_samples, n_features = X.shape
 
         # If y is not yet a dummy matrix we want to transform it into one. 
-        if y.ndim < 2 or y.shape[1]==1: # Check if there is a second dimention or if the second dimention only has a length of 1
-            self.classes_, self.y_encoded = np.unique(y, return_inverse=True)
+        if y_original.ndim < 2 or y_original.shape[1]==1: # Check if there is a second dimention or if the second dimention only has a length of 1
+            self.classes_, self.y_encoded = np.unique(y_original, return_inverse=True)
             y = np.eye(len(self.classes_))[self.y_encoded]
 
         # Input check
@@ -87,7 +87,6 @@ class PLSLDA(BaseEstimator):
         self.lda = LinearDiscriminantAnalysis()
         self.pls.fit(X,y)
         X_scores = self.pls.transform(X)
-        y_original = np.argmax(y, axis=1) # LDA takes the encoded y vector, not dummy
         self.lda.fit(X_scores, y_original)
 
         self.x_weights = self.pls.x_weights_
