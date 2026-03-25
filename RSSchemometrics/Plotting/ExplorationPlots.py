@@ -306,7 +306,8 @@ def plot_spectra(data, xaxis=None, reference=None, regression=True, title=None, 
         cmap = mpl.colormaps[cmap]
 
     if reference is None:
-        ax.plot(xaxis, data.T)
+        color = overwrite_cmap if overwrite_cmap else rucolors.red
+        ax.plot(xaxis, data.T, c=color)
     else:
         y = np.array(reference)
         if regression:  # continuous colormap
