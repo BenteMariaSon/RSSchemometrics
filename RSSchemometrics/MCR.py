@@ -87,7 +87,7 @@ class MCR_ALS:
             ax.set_ylabel("Fraction explained variance")
             ax.set_xticks(np.arange(1,max_ncomps+1))
             ax.legend()
-            # ax.grid(True)
+            ax.grid(True)
             return ax
     
     def estimate_initialcomps(self, X=None, n_comps=None, method='random', seed=None, verbose=False, visualize=False):
