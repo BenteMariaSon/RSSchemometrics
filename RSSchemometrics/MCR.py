@@ -43,7 +43,6 @@ class MCR_ALS:
         self.init_method = init_method
         self.n_experiments = n_experiments
         self.mcr_results = None
-        return
 
     def estimate_ncomps(self, X=None, method='svd', max_ncomps=20, ax=None, verbose=False):
         """Generates variance plot to estimate number of components
@@ -86,7 +85,7 @@ class MCR_ALS:
             ax.set_title("Explained variance vs. number of components")
             ax.set_xlabel("Component Number")
             ax.set_ylabel("Fraction explained variance")
-            ax.set_xticks(np.arange(1,max_ncomps+1))
+            # ax.set_xticks(np.arange(1,max_ncomps+1))
             ax.legend()
             ax.grid(True)
             return ax
