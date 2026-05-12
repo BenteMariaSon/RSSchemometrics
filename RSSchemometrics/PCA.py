@@ -104,7 +104,7 @@ class PCA(BaseEstimator):
         self.D = D[:self.n_components_]
         self.loadings_ = V.T[:, :self.n_components_]
         self.explained_variance_ratio_ = PC_var[:self.n_components_]
-        self.scores_ = U @ np.diag(D)
+        self.scores_ = U @ np.diag(self.D)
 
         self.errors_ = X - self.scores_@(self.loadings_.T)
         self.T2_ = np.sum((self.scores_ - np.mean(self.scores_, axis=0))**2 / (self.D**2 / X.shape[0]), axis=1)
