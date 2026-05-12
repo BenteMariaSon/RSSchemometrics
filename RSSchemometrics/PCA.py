@@ -101,13 +101,13 @@ class PCA(BaseEstimator):
         U, D, V = np.linalg.svd(X, full_matrices=False)
         PC_var = D**2 / np.sum(D**2)
         U = U[:, :self.n_components_]
-        D = D[:self.n_components_]
+        self.D = D[:self.n_components_]
         self.loadings_ = V.T[:, :self.n_components_]
         self.explained_variance_ratio_ = PC_var[:self.n_components_]
         self.scores_ = U @ np.diag(D)
 
         self.errors_ = X - self.scores_@(self.loadings_.T)
-        self.T2_ = np.sum((self.scores_ - np.mean(self.scores_, axis=0))**2 / (D**2 / X.shape[0]), axis=1)
+        self.T2_ = np.sum((self.scores_ - np.mean(self.scores_, axis=0))**2 / (self.D**2 / X.shape[0]), axis=1)
         self.Q_ = np.sum(self.errors_**2, axis=1)
 
     def transform(self, X, y=None, returnT2andQ=False):
