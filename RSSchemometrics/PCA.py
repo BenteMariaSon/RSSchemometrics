@@ -126,7 +126,7 @@ class PCA(BaseEstimator):
         scores = ((X-self.means)/self.stds) @ self.loadings_
         if returnT2andQ:
             T2 = np.sum((scores - np.mean(scores, axis=0))**2 / (self.D**2 / self.n_samples), axis=1)
-            Q = np.sum((X - scores@self.V.T)**2, axis=1)  
+            Q = np.sum((X - scores@self.loadings_.T)**2, axis=1)  
             return scores, T2, Q
         else:
             return scores
