@@ -378,7 +378,7 @@ class PLSDA_CV(PLSDA):
                 self.max_LV = min(X.shape[0], X.shape[1])
             else:
                 self.max_LV = min(self.max_LV, X.shape[0], X.shape[1])
-            for train_idx, _ in self.CV_scheme.split(X, y): # ensure the number of LVs is never larger than the number of samples in training data. 
+            for train_idx, _ in self.CV_scheme.split(X, y, groups=groups): # ensure the number of LVs is never larger than the number of samples in training data. 
                 self.max_LV = min(self.max_LV, X.shape[1], len(train_idx))
 
             for i in range(0, self.max_LV):
