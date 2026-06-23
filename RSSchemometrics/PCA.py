@@ -77,12 +77,14 @@ class PCA(BaseEstimator):
         """
         self.is_fitted_ = True
         X = np.asarray(X, copy=True)
+        self.n_samples = X.shape[0]
+        self.n_vars = X.shape[1]
 
         # set n_components
         if self.n_components_ is None:
-            self.n_components_ = np.min([X.shape[0], X.shape[1]])
+            self.n_components_ = np.min([self.n_samples, self.n_vars])
         else: # If n_components is too high we want to set it to the max possible number of components
-            self.n_components_ = np.min([X.shape[0], X.shape[1], self.n_components_])
+            self.n_components_ = np.min([self.n_samples, self.n_vars, self.n_components_])
 
         # mean center and scale
         if scale:
@@ -90,10 +92,10 @@ class PCA(BaseEstimator):
             self.stds = np.std(X, axis=0)
         elif mean_center:
             self.means = np.mean(X, axis=0)
-            self.stds = np.ones(X.shape[1])
+            self.stds = np.ones(self.n_vars)
         else:
-            self.means = np.zeros(X.shape[1])
-            self.stds = np.ones(X.shape[1])
+            self.means = np.zeros(self.n_vars)
+            self.stds = np.ones(self.n_vars)
 
         X = (X - self.means) / self.stds
 
@@ -101,13 +103,13 @@ class PCA(BaseEstimator):
         U, D, V = np.linalg.svd(X, full_matrices=False)
         PC_var = D**2 / np.sum(D**2)
         U = U[:, :self.n_components_]
-        D = D[:self.n_components_]
+        self.D = D[:self.n_components_]
         self.loadings_ = V.T[:, :self.n_components_]
         self.explained_variance_ratio_ = PC_var[:self.n_components_]
-        self.scores_ = U @ np.diag(D)
+        self.scores_ = U @ np.diag(self.D)
 
         self.errors_ = X - self.scores_@(self.loadings_.T)
-        self.T2_ = np.sum((self.scores_ - np.mean(self.scores_, axis=0))**2 / (D**2 / X.shape[0]), axis=1)
+        self.T2_ = np.sum((self.scores_ - np.mean(self.scores_, axis=0))**2 / (self.D**2 / self.n_samples), axis=1)
         self.Q_ = np.sum(self.errors_**2, axis=1)
 
     def transform(self, X, y=None, returnT2andQ=False):
@@ -123,8 +125,8 @@ class PCA(BaseEstimator):
         
         scores = ((X-self.means)/self.stds) @ self.loadings_
         if returnT2andQ:
-            T2 = np.sum((scores - np.mean(scores, axis=0))**2 / (self.D**2 / self.X.shape[0]), axis=1)
-            Q = np.sum((X - scores@self.V.T)**2, axis=1)  
+            T2 = np.sum((scores - np.mean(scores, axis=0))**2 / (self.D**2 / self.n_samples), axis=1)
+            Q = np.sum((X - scores@self.loadings_.T)**2, axis=1)  
             return scores, T2, Q
         else:
             return scores

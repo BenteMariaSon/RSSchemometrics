@@ -64,7 +64,7 @@ class PLSDA(BaseEstimator):
         Args:
             - X (ndarray): Data matrix of shape (n_samples, n_features)
             - y (ndarray): Data matrix of shape (n_samples,). This will be converted to a dummy matrix internally
-        """
+            """
         self.is_fitted_ = True
         X = np.asarray(X, copy=True)
         y = np.asarray(y, copy=True)
@@ -350,11 +350,12 @@ class PLSDA_CV(PLSDA):
 
         self.y_pred_P = None
 
-    def fit(self, X, y, print_results=False):
+    def fit(self, X, y, groups=None, print_results=False):
         """Fit a PLS model with given X and y data
         Args:
             - X (ndarray): Data matrix of shape (n_samples, n_features)
             - y (ndarray): Data matrix of shape (n_samples,) or (n_samples, n_targets) if there is more than one target variable 
+            - groups (1darray): Data array of shape (n_samples,) containing the group each sample belongs to (only used when group-wise splitting is applied)
             - print_results (bool, optional): Whether to print the found number of LVS with the corresponding accuracy and RMSE values. Defaults to False
         """
         self.is_fitted_ = True
@@ -377,7 +378,7 @@ class PLSDA_CV(PLSDA):
                 self.max_LV = min(X.shape[0], X.shape[1])
             else:
                 self.max_LV = min(self.max_LV, X.shape[0], X.shape[1])
-            for train_idx, _ in self.CV_scheme.split(X, y): # ensure the number of LVs is never larger than the number of samples in training data. 
+            for train_idx, _ in self.CV_scheme.split(X, y, groups=groups): # ensure the number of LVs is never larger than the number of samples in training data. 
                 self.max_LV = min(self.max_LV, X.shape[1], len(train_idx))
 
             for i in range(0, self.max_LV):
@@ -385,9 +386,9 @@ class PLSDA_CV(PLSDA):
                 
                 model.fit(X, y)
                 y_cal = model.predict(X)
-                y_CV = cross_val_predict(model, X, y, cv=self.CV_scheme)
+                y_CV = cross_val_predict(model, X, y, cv=self.CV_scheme, groups=groups)
                 y_cal_proba = model.predict_proba(X)
-                y_CV_proba = cross_val_predict(model, X, y, cv=self.CV_scheme, method='predict_proba')
+                y_CV_proba = cross_val_predict(model, X, y, cv=self.CV_scheme, method='predict_proba', groups=groups)
 
                 self.AccuracyCs.append(accuracy_score(y, y_cal))
                 self.AccuracyCVs.append(accuracy_score(y, y_CV))
