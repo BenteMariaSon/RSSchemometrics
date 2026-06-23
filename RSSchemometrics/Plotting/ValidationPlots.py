@@ -150,3 +150,65 @@ def confusion_matrix_plot(y_pred, y, labels=None, title=None, cmap=rucolors.RU_c
         plt.show()
     else:
         return fig, ax
+
+#===================================================================================================================================================#
+
+def rectangular_confusion_matrix_plot(cm, true_labels, pred_labels, title=None, cmap=rucolors.RU_colormap, ax_in=None):
+    """Dispaly a rectangular confusion matrix as a plot, this can for example be used when the model predicts an 'uncertain' label that is not in the True labels
+
+    Parameters:
+    - cm (ndarray): a rectangular confusion matrix
+    - true_labels (str-array): array containing the labels of the true classes (must be the same length as the number of rows in cm)
+    - pred_labels (str-array): array containing the labels of the predicted classes (must be the same length as the number of columns in cm)
+    - title (string, optional): Description of title. Defaults to None.
+    - cmap (cmap or str, optional): A colormap or string containing the name of the colormap that should be used to color the points. Defaults to rucolors.RU_colormap (this is a custom colormap)
+    - ax_in (figure axis, optional): Axis can be passed here to add the scatter plot to an existing axis system. Defaults to None
+    
+    Output:
+    - Displays the confusion matrix
+    """
+    
+    if cm.shape[0] != len(true_labels):
+        raise ValueError(f"Number of classes in true_labels (currently {len(true_labels)}) must be equal to the number of rows in the confusion matrix (currently {cm.shape[0]})")
+    if cm.shape[1] != len(pred_labels):
+        raise ValueError(f"Number of classes in pred_labels (currently {len(pred_labels)}) must be equal to the number of columns in the confusion matrix (currently {cm.shape[1]})")
+    
+    if ax_in is None:
+        fig, ax = plt.subplots(figsize=(6,4))
+    else:
+        ax = ax_in
+        fig = ax_in.figure
+    
+    im = ax.imshow(cm, interpolation='nearest', cmap=cmap)
+    plt.colorbar(im, ax=ax, shrink=0.7)
+    
+    ax.set(
+        xticks=np.arange(len(pred_labels)),
+        yticks=np.arange(len(true_labels)),
+        xticklabels=pred_labels, 
+        yticklabels=true_labels,
+        xlabel="Predicted label",
+        ylabel="True label"
+    )
+    # plt.setp(ax.get_xticklabels(), rotation=45, ha="right")
+    
+    # add the confusion matrix values to the plot with the correct color
+    thresh = cm.max() / 2
+    for i in range(cm.shape[0]):
+        for j in range(cm.shape[1]):
+            ax.text(
+                j, i,
+                f"{cm[i, j]}",
+                ha="center",
+                va="center",
+                color="white" if cm[i, j] > thresh else "black"
+            )
+    ax.set_title(title if title else "Confusion Matrix")
+    ax.grid(False)
+
+    if ax_in is None:
+        fig.tight_layout()
+        plt.show()
+    else:
+        return fig, ax
+    
