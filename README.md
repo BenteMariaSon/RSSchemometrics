@@ -3,8 +3,8 @@ Chemometrics codebase for the Radboud Summer School course given by the Departme
 
 Install to a local python environment:
 
-pip install git+https://github.com/BenteMariaSon/RSSchemometrics --quiet
+pip install git+https://github.com/BenteMariaSon/RSSchemometrics
 
 Install to google colab:
 
-!pip install git+https://github.com/BenteMariaSon/RSSchemometrics --quiet
+!pip install git+https://github.com/BenteMariaSon/RSSchemometrics
