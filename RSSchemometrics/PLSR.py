@@ -370,6 +370,9 @@ class PLSR_CV(PLSR):
             self.opt_LV = np.argmin(self.RMSECVs)+1 # lower RMSE is better
         else:
             self.opt_LV = self.enforce_nLVs
+            
+        if self.opt_LV==1 and self.enforce_min_2_LVs:
+            self.opt_LV = np.argmin(self.RMSECVs[1:])+2
 
         # Create the optimal model
         self.model = PLSR(n_components=self.opt_LV, scale=self.scale, calculate_explained_var=True)

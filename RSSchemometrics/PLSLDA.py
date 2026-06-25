@@ -407,7 +407,7 @@ class PLSLDA_CV(PLSLDA):
             self.opt_LV = self.enforce_nLVs
 
         if self.opt_LV==1 and self.enforce_min_2_LVs: 
-            self.opt_LV=2
+            self.opt_LV = np.argmax(self.AccuracyCVs[1:])+2
 
         # Create the optimal model
         self.model = PLSLDA(n_components=self.opt_LV, scale=self.scale, calculate_explained_var=True)
