@@ -329,11 +329,12 @@ class PLSR_CV(PLSR):
         self.is_fitted_ = False
         self.y_pred_P = None
 
-    def fit(self, X, y, print_results=False):
+    def fit(self, X, y, groups=None, print_results=False):
         """Fit a PLS model with given X and y data
         Args:
             - X (ndarray): Data matrix of shape (n_samples, n_features)
             - y (ndarray): Data matrix of shape (n_samples,) or (n_samples, n_targets) if there is more than one target variable 
+            - groups (ndarray): Data array of shape (n_samples,) containing the group each sample belongs to (only used when group-wise CV_scheme is applied)
             - print_results (bool, optional): Whether to print the found number of LVS with the corresponding RMSEC and RMSECV values. Defaults to False
         """
         
@@ -349,7 +350,7 @@ class PLSR_CV(PLSR):
                 self.max_LV = min(X.shape[0], X.shape[1])
             else:
                 self.max_LV = min(self.max_LV, X.shape[0], X.shape[1])
-            for train_idx, _ in self.CV_scheme.split(X, y): # ensure the number of LVs is never larger than the number of samples in training data. 
+            for train_idx, _ in self.CV_scheme.split(X, y, groups=groups): # ensure the number of LVs is never larger than the number of samples in training data. 
                 self.max_LV = min(self.max_LV, X.shape[1], len(train_idx))
 
             for i in range(0, self.max_LV):
@@ -357,7 +358,7 @@ class PLSR_CV(PLSR):
                 
                 model.fit(X, y)
                 y_cal = model.predict(X)
-                y_CV = cross_val_predict(model, X, y, cv=self.CV_scheme)
+                y_CV = cross_val_predict(model, X, y, cv=self.CV_scheme, groups=groups)
 
                 self.RMSECs.append(root_mean_squared_error(y, y_cal))
                 self.RMSECVs.append(root_mean_squared_error(y, y_CV))
@@ -491,7 +492,7 @@ class PLSR_CV(PLSR):
         for train, test in CV_scheme.split(X, y, groups=groups):
             X_train_pp = np.asarray(pp_pipe.fit_transform(X[train,:]))
             X_test_pp = np.asarray(pp_pipe.transform(X[test,:]))
-            self.fit(X_train_pp, y[train], print_results=print_results)
+            self.fit(X_train_pp, y[train], print_results=print_results, groups=(groups[train] if groups is not None else None))
             self.y_pred_P[test] = self.predict(X_test_pp)
         
         self.RMSEP = root_mean_squared_error(y, self.y_pred_P)

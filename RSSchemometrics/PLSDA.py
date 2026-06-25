@@ -569,7 +569,7 @@ class PLSDA_CV(PLSDA):
         for train, test in CV_scheme.split(X, y, groups=groups):
             X_train_pp = np.asarray(pp_pipe.fit_transform(X[train,:]))
             X_test_pp = np.asarray(pp_pipe.transform(X[test,:]))
-            self.fit(X_train_pp, y[train], print_results=print_results)
+            self.fit(X_train_pp, y[train], print_results=print_results, groups=(groups[train] if groups is not None else None))
             self.y_pred_P[test] = self.predict(X_test_pp)
             self.y_pred_P_proba[test] = self.predict_proba(np.asarray(pp_pipe.transform(X[test,:])))
         

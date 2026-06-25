@@ -353,7 +353,7 @@ class PLSLDA_CV(PLSLDA):
 
         self.y_pred_P = None
 
-    def fit(self, X, y, print_results=False):
+    def fit(self, X, y, groups=None, print_results=False):
         """Fit a PLS model with given X and y data
         Args:
             - X (ndarray): Data matrix of shape (n_samples, n_features)
@@ -380,7 +380,7 @@ class PLSLDA_CV(PLSLDA):
                 self.max_LV = min(X.shape[0], X.shape[1])
             else:
                 self.max_LV = min(self.max_LV, X.shape[0], X.shape[1])
-            for train_idx, _ in self.CV_scheme.split(X, y): # ensure the number of LVs is never larger than the number of samples in training data. 
+            for train_idx, _ in self.CV_scheme.split(X, y, groups=groups): # ensure the number of LVs is never larger than the number of samples in training data. 
                 self.max_LV = min(self.max_LV, X.shape[1], len(train_idx))
 
             for i in range(0, self.max_LV):
@@ -388,9 +388,9 @@ class PLSLDA_CV(PLSLDA):
                 
                 model.fit(X, y)
                 y_cal = model.predict(X)
-                y_CV = cross_val_predict(model, X, y, cv=self.CV_scheme)
+                y_CV = cross_val_predict(model, X, y, cv=self.CV_scheme, groups=groups)
                 y_cal_proba = model.predict_proba(X)
-                y_CV_proba = cross_val_predict(model, X, y, cv=self.CV_scheme, method='predict_proba')
+                y_CV_proba = cross_val_predict(model, X, y, cv=self.CV_scheme, method='predict_proba', groups=groups)
 
                 self.AccuracyCs.append(accuracy_score(y, y_cal))
                 self.AccuracyCVs.append(accuracy_score(y, y_CV))
@@ -569,7 +569,7 @@ class PLSLDA_CV(PLSLDA):
         for train, test in CV_scheme.split(X, y, groups=groups):
             X_train_pp = np.asarray(pp_pipe.fit_transform(X[train,:]))
             X_test_pp = np.asarray(pp_pipe.transform(X[test,:]))
-            self.fit(X_train_pp, y[train], print_results=print_results)
+            self.fit(X_train_pp, y[train], print_results=print_results, groups=(groups[train] if groups is not None else None))
             self.y_pred_P[test] = self.predict(X_test_pp)
             self.y_pred_P_proba[test] = self.predict_proba(np.asarray(pp_pipe.transform(X[test,:])))
         
