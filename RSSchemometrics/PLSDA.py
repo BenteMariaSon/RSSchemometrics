@@ -10,6 +10,7 @@ from sklearn.cross_decomposition import PLSRegression
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score
 from sklearn.pipeline import Pipeline
+from scipy.stats import f
 
 class PLSDA(BaseEstimator):
     """
@@ -173,6 +174,72 @@ class PLSDA(BaseEstimator):
         y_pred_proba = self.model.predict(X)
         y_pred_encoded = np.argmax(y_pred_proba, axis=1)
         return self.classes_[y_pred_encoded]
+    
+    def calculate_VIP(self): 
+        """Calculate and return the Variable Importance Projection (VIP) scores of the fitted PLS model. 
+        Implemented as discribed in Mehmood, et al. (2012). A review of variable selection methods in Partial Least Squares Regression 
+        
+        Args:
+            - 
+        """
+        if self.is_fitted_==False:
+            raise ValueError("Model has not been fitted yet, call fit() first.")
+        
+        t = self.x_scores
+        q = self.y_loadings
+        w = self.x_weights
+        n_features = self.x_loadings.shape[0]
+        
+        s = np.diag(t.T @ t @ q.T @ q) # sum of squares explained by each component (SS_a in article)
+        total_s = np.sum(s)
+        
+        vip = np.zeros(n_features)
+        for i in range(n_features):
+            weight = np.array([(w[i,a]**2)/np.sum(w[:,a]**2) for a in range(self.n_components)])
+            vip[i] = np.sqrt(n_features * np.sum(s * weight) / total_s)
+        return vip
+    
+    def calculate_sMC(self, X):
+        """Calculate and return the Significance Multivariate Correlation (sMC) values of the fitted PLS model. 
+        Implemented as discribed in Tran, et al (2014) Interpretation of variable importance in Partial Least Squares with Significance Multivariate Correlation (sMC).
+        
+        Args:
+            - X (ndarray): The data matrix that was used for fitting
+        """
+        if self.is_fitted_==False:
+            raise ValueError("Model has not been fitted yet, call fit() first.")
+        
+        if self.scale:
+            X = StandardScaler().fit_transform(X)
+        else:
+            X = MeanCentering().fit_transform(X)
+        n_samples, n_features = X.shape
+        
+                    
+        B = np.asarray(self.coef) # shape (n_target, n_features)
+        # if B is only one dimension, we convert it to two dimensional
+        if B.ndim == 1:
+            B = B.reshape(1, n_features) 
+        n_targets = B.shape[0]
+        
+        smc_values = np.zeros(n_features, n_targets)
+        p_values = np.zeros(n_features, n_targets)
+        for target in range(n_targets): # if PLS2 we run this loop multiple times, for PLS1 just once
+            b = B[target, :]
+            
+            p_smc = b / np.linalg.norm(b) # eq 14
+            t_smc = X @ p_smc # eq 15
+            for i in range(n_features): 
+                X_hat_i = t_smc @ p_smc[i] # eq 17
+                resid = X[:,i] - X_hat_i # eq 17
+                
+                SS_model = np.sum(X_hat_i**2) # eq 18
+                SS_resid = np.sum(resid**2) # eq 19
+                
+                smc_values[i, target] = (SS_model / (SS_resid/(n_samples-2))) #eq 20-22
+                p_values[i, target] = (1 - f.cdf(smc_values[i,target], 1, n_samples-2)) # f-test conversion to p-values
+        
+        return np.squeeze(smc_values), np.squeeze(p_values) # use squeeze to remove added dimensions
 
     def plot_scree(self, n_components=None, color=rucolors.red):
         """Plots a scree plot to visualize the explained variance of each latent variable
