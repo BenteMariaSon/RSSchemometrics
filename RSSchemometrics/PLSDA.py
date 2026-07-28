@@ -221,8 +221,8 @@ class PLSDA(BaseEstimator):
             B = B.reshape(1, n_features) 
         n_targets = B.shape[0]
         
-        smc_values = np.zeros(n_features, n_targets)
-        p_values = np.zeros(n_features, n_targets)
+        smc_values = np.zeros((n_features, n_targets))
+        p_values = np.zeros((n_features, n_targets))
         for target in range(n_targets): # if PLS2 we run this loop multiple times, for PLS1 just once
             b = B[target, :]
             
