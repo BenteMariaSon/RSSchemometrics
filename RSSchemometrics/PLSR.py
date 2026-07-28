@@ -190,12 +190,11 @@ class PLSR(BaseEstimator):
             raise ValueError("Model has not been fitted yet, call fit() first.")
         
         if self.scale:
-            X = StandardScaler().fit_transform(X)
+            X = np.asarray(StandardScaler().fit_transform(X))
         else:
-            X = MeanCentering().fit_transform(X)
+            X = np.asarray(MeanCentering().fit_transform(X))
         n_samples, n_features = X.shape
         
-                    
         B = np.asarray(self.coef) # shape (n_target, n_features)
         # if B is only one dimension, we convert it to two dimensional
         if B.ndim == 1:
@@ -609,6 +608,8 @@ class PLSR_CV(PLSR):
 # y = np.random.rand(50)
 # pls = PLSR(n_components=10)
 # pls.fit(X, y)
+# print(pls.calculate_VIP())
+# print(pls.calculate_sMC())
 # print(pls.x_scores.shape)
 # print(pls.y_scores.shape)
 # print(pls.x_loadings.shape)

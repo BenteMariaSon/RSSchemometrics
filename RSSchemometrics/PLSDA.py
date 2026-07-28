@@ -8,7 +8,7 @@ from sklearn.model_selection import KFold, cross_validate, cross_val_predict
 from sklearn.base import BaseEstimator
 from sklearn.cross_decomposition import PLSRegression
 from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, root_mean_squared_error
 from sklearn.pipeline import Pipeline
 from scipy.stats import f
 
@@ -210,11 +210,10 @@ class PLSDA(BaseEstimator):
             raise ValueError("Model has not been fitted yet, call fit() first.")
         
         if self.scale:
-            X = StandardScaler().fit_transform(X)
+            X = np.asarray(StandardScaler().fit_transform(X))
         else:
-            X = MeanCentering().fit_transform(X)
+            X = np.asarray(MeanCentering().fit_transform(X))
         n_samples, n_features = X.shape
-        
                     
         B = np.asarray(self.coef) # shape (n_target, n_features)
         # if B is only one dimension, we convert it to two dimensional
