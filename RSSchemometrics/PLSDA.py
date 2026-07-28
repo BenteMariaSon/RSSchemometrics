@@ -229,7 +229,7 @@ class PLSDA(BaseEstimator):
             p_smc = b / np.linalg.norm(b) # eq 14
             t_smc = X @ p_smc # eq 15
             for i in range(n_features): 
-                X_hat_i = t_smc @ p_smc[i] # eq 17
+                X_hat_i = t_smc * p_smc[i] # eq 17
                 resid = X[:,i] - X_hat_i # eq 17
                 
                 SS_model = np.sum(X_hat_i**2) # eq 18
