@@ -206,18 +206,16 @@ class PLSR(BaseEstimator):
         for target in range(n_targets): # if PLS2 we run this loop multiple times, for PLS1 just once
             b = B[target, :]
             
-            p_smc = b / np.linalg.norm(b) # eq 14
-            t_smc = X @ p_smc # eq 15
-            for i in range(n_features): 
-                X_hat_i = t_smc * p_smc[i] # eq 17
-                resid = X[:,i] - X_hat_i # eq 17
-                
-                SS_model = np.sum(X_hat_i**2) # eq 18
-                SS_resid = np.sum(resid**2) # eq 19
-                
-                smc_values[i, target] = (SS_model / (SS_resid/(n_samples-2))) #eq 20-22
-                p_values[i, target] = (1 - f.cdf(smc_values[i,target], 1, n_samples-2)) # f-test conversion to p-values
-        
+            y_hat = X @ b # predicted y vector (eq 15)
+            X_hat = np.outer(y_hat, b) / np.linalg.norm(b)**2 # predicted X (eq 16)
+            resid = X - X_hat # (eq 16)
+            
+            SS_model = np.sum(X_hat**2) # eq 18
+            SS_resid = np.sum(resid**2) # eq 19
+            
+            smc_values[:, target] = (SS_model / (SS_resid/(n_samples-2))) # eq 22
+            p_values[:, target] = (1 - f.cdf(smc_values[:,target], 1, n_samples-2)) # f-test conversion to p-values
+                     
         return np.squeeze(smc_values), np.squeeze(p_values) # use squeeze to remove added dimensions
 
     def plot_scree(self, n_components=None, color=rucolors.red):
