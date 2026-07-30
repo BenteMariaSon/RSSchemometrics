@@ -323,7 +323,8 @@ def scores_plot_MarkerShapeAndColor(scores, color_reference, marker_reference, e
     
     first_legend = ax.legend(handles=marker_handles, title="", loc='upper left', bbox_to_anchor=(1,1))
     if regression == False:
-        plt.gca().add_artist(first_legend) # Ensures the first legend is not overwritten by the second but is kept. 
+        # plt.gca().add_artist(first_legend) # Ensures the first legend is not overwritten by the second but is kept. 
+        ax.add_artist(first_legend)
         ax.legend(handles=color_handles, title="", loc='lower left', bbox_to_anchor=(1,0))
     
 
