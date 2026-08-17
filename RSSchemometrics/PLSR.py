@@ -531,7 +531,7 @@ class PLSR_CV(PLSR):
         self.RMSEP = root_mean_squared_error(y, self.y_pred_P)
 
         # Restore the model to again use all the data 
-        self.fit(pp_pipe.fit_transform(X), y, print_results=False)
+        self.fit(pp_pipe.fit_transform(X), y, groups=groups, print_results=False)
 
         return self.y_pred_P, self.RMSEP
 

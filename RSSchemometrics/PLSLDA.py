@@ -576,7 +576,7 @@ class PLSLDA_CV(PLSLDA):
         self.AccuracyP = accuracy_score(y, self.y_pred_P)
 
         # Restore the model to again use all the data 
-        self.fit(pp_pipe.fit_transform(X), y, print_results=print_results)
+        self.fit(pp_pipe.fit_transform(X), y, groups=groups, print_results=print_results)
 
         return self.y_pred_P, self.AccuracyP
 

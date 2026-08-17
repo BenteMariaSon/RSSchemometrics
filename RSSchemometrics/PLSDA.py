@@ -295,7 +295,7 @@ class PLSDA(BaseEstimator):
         
         loadings_plot(self.x_loadings, Comps=LVs, xaxis=xaxis, xlabel=xlabel, ylabel=ylabel, title=title, cmap=cmap, overwrite_cmap=overwrite_cmap, method='pls')
 
-    def plot_multiple_scores(self, n_components=None, reference=None, cmap=rucolors.secondary_colormap, overwrite_cmap=None):
+    def plot_multiple_scores(self, n_components=None, reference=None, ref_label=None, cmap=rucolors.secondary_colormap, overwrite_cmap=None):
         """Plots the scores plots of all possible combinations of LVs of the first n_components. This method will plot the distribution of the scores within the LV on the diagonal. 
         Args: 
             - n_components (int, optional): The number of components to use in the plot, can be used when we require the plot to show less components than the full model, if set to None, the maximum number of components will be selected
@@ -307,7 +307,7 @@ class PLSDA(BaseEstimator):
         if self.is_fitted_==False:
             raise ValueError("Model has not been fitted yet, call .fit() first.")
         
-        multiple_scoreplot(self.x_scores, np.vstack((self.explained_variance_ratio_X, self.explained_variance_ratio_y)), reference=reference, regression=False, n_components=n_components, cmap=cmap, overwrite_cmap=overwrite_cmap, method='pls')
+        multiple_scoreplot(self.x_scores, np.vstack((self.explained_variance_ratio_X, self.explained_variance_ratio_y)), reference=reference, ref_label=ref_label, regression=False, n_components=n_components, cmap=cmap, overwrite_cmap=overwrite_cmap, method='pls')
 
 
 class PLSDA_CV(PLSDA):
@@ -606,7 +606,7 @@ class PLSDA_CV(PLSDA):
         self.AccuracyP = accuracy_score(y, self.y_pred_P)
 
         # Restore the model to again use all the data 
-        self.fit(pp_pipe.fit_transform(X), y, print_results=print_results)
+        self.fit(pp_pipe.fit_transform(X), y, groups=groups, print_results=print_results)
 
         return self.y_pred_P, self.AccuracyP
 
