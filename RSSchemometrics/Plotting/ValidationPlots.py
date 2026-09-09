@@ -39,7 +39,7 @@ def predvsref_plot(y_pred, y, xlabel=None, ylabel=None, title=None, color=rucolo
     ax.set_xlabel(xlabel if xlabel is not None else "True Reference Values")
     ax.set_ylabel(ylabel if ylabel is not None else "Predicted Values")
     ax.set_title(title if title is not None else "Predicted vs Reference Values")
-    ax.text(0.05, 0.90, f'R2: {np.round(R2,3)}\nRMSE: {np.round(RMSE,3)}', transform=ax.transAxes)
+    ax.text(0.05, 0.80, f'R2: {np.round(R2,3)}\nRMSE: {np.round(RMSE,3)}', transform=ax.transAxes)
     if ax_in is None:
         fig.tight_layout()
         plt.show()
