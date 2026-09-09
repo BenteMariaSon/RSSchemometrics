@@ -340,7 +340,7 @@ class PLSR_CV(PLSR):
     """
 
 
-    def __init__(self, max_LV=20, scale=False, CV_scheme=KFold(n_splits=5, shuffle=True, random_state=37), n_jobs=1, enforce_nLVs=None, enforce_min_2_LVs=False):
+    def __init__(self, max_LV=20, scale=False, CV_scheme=KFold(n_splits=5, shuffle=True, random_state=37), groups=groups, n_jobs=1, enforce_nLVs=None, enforce_min_2_LVs=False):
         """Initialize the PLS model
         Args:
             - max_LV (int, optional): The maximum number of LVs allowed to be used by the model, defaults to 20
@@ -353,6 +353,7 @@ class PLSR_CV(PLSR):
         self.max_LV = max_LV
         self.scale = scale
         self.CV_scheme = CV_scheme
+        self.groups = groups
         self.n_jobs = n_jobs
         self.enforce_nLVs = enforce_nLVs
         self.enforce_min_2_LVs = enforce_min_2_LVs
@@ -374,7 +375,10 @@ class PLSR_CV(PLSR):
 
         self.RMSECs = []
         self.RMSECVs = []
-        
+
+        if groups is None:
+            groups = self.groups
+            
         if self.enforce_nLVs is None:
             if self.max_LV is None:
                 self.max_LV = min(X.shape[0], X.shape[1])
